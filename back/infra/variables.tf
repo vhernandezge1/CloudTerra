@@ -6,7 +6,7 @@ variable "project_id" {
 variable "region" {
   type        = string
   description = "Région GCP"
-  default     = "europe-west1"
+  default     = "europe-west9"
 }
 
 variable "api_image" {
