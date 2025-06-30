@@ -1,0 +1,58 @@
+QuickQuote — Générateur de devis
+
+Objectif
+Application cloud-native pour générer et gérer des devis clients avec authentification sécurisée.
+
+Instructions d’installation et déploiement
+
+Backend
+Cloner le repo et se placer dans le dossier back
+
+Construire l’image Docker :
+
+bash
+Copier
+docker build -t tonuser/quickquote-api .
+Pousser l’image sur Docker Hub :
+
+bash
+Copier
+docker push tonuser/quickquote-api
+Déployer sur Cloud Run :
+
+bash
+Copier
+gcloud run deploy quickquote-api \
+  --image=tonuser/quickquote-api:latest \
+  --region=europe-west9 \
+  --platform=managed \
+  --allow-unauthenticated
+Tester l’API :
+
+POST /login avec email test@example.com / password password123 pour obtenir un token
+
+GET /api/quotes avec header Authorization: Bearer <token>
+
+Frontend
+Se placer dans le dossier front
+
+Installer les dépendances :
+
+bash
+Copier
+npm install
+Builder le frontend :
+
+bash
+Copier
+npm run build
+Uploader le dossier dist/ vers le bucket Google Cloud Storage (nom : bucket-quick-quotes) :
+
+bash
+Copier
+gsutil -m cp -r dist/* gs://bucket-quick-quotes
+Accéder au frontend via l’URL publique du bucket :
+
+pgsql
+
+https://storage.googleapis.com/bucket-quick-quotes/index.html
