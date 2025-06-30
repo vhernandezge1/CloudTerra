@@ -1,58 +1,71 @@
-QuickQuote — Générateur de devis
+# QuickQuote API
 
-Objectif
-Application cloud-native pour générer et gérer des devis clients avec authentification sécurisée.
+## Objectifs
 
-Instructions d’installation et déploiement
+QuickQuote est une API REST sécurisée pour gérer des devis clients.  
+L’objectif est de proposer un backend cloud-native avec authentification, accès protégé aux ressources, et persistance des données dans une base PostgreSQL managée.
 
-Backend
-Cloner le repo et se placer dans le dossier back
+---
 
-Construire l’image Docker :
+## Stack technique
 
-bash
-Copier
-docker build -t tonuser/quickquote-api .
-Pousser l’image sur Docker Hub :
+- **Backend** : Node.js avec Express (ES Modules)  
+- **Base de données** : PostgreSQL (Cloud SQL)  
+- **Authentification** : JWT (JSON Web Token) + bcrypt pour le hash des mots de passe  
+- **Conteneurisation** : Docker (Node 20)  
+- **Déploiement** : Google Cloud Run (serverless container)  
+- **Infrastructure as Code** : Terraform (gestion des ressources Cloud)  
 
-bash
-Copier
-docker push tonuser/quickquote-api
-Déployer sur Cloud Run :
+---
 
-bash
-Copier
+## Instructions d’usage
+
+### Prérequis
+
+- Node.js et npm installés localement  
+- Docker installé  
+- Google Cloud SDK (`gcloud`) configuré avec le projet  
+- Terraform installé  
+
+### Lancement local
+1. Se placer dans le dossier back
+cd back
+
+2. Installer les dépendances :  
+npm install
+
+3. Démarrer le serveur :
+npm start
+
+4. L’API sera accessible sur http://localhost:8080
+
+5.  Authentification
+Endpoint POST /login avec un corps JSON { "email": "test@example.com", "password": "password123" }
+Réponse : un token JWT à utiliser en Authorization: Bearer <token> sur les routes protégées
+
+Routes /api/quotes (pas encore fonctionnelle).
+
+6. Construction et déploiement Docker
+
+docker build -t <user>/quickquote-api .
+docker push <user>/quickquote-api
+
+7. Déploiement sur Google Cloud Run
+
 gcloud run deploy quickquote-api \
-  --image=tonuser/quickquote-api:latest \
+  --image=<user>/quickquote-api:latest \
   --region=europe-west9 \
   --platform=managed \
   --allow-unauthenticated
-Tester l’API :
 
-POST /login avec email test@example.com / password password123 pour obtenir un token
+Choix techniques
 
-GET /api/quotes avec header Authorization: Bearer <token>
+Express choisi pour sa simplicité et sa compatibilité avec Node.js ES Modules
+JWT utilisé pour sécuriser les endpoints via un token signé, évitant la gestion de sessions serveur
+bcrypt pour hacher les mots de passe en mémoire, sécurisant la vérification utilisateur
+PostgreSQL offre une base relationnelle robuste, adaptée à la gestion structurée des devis
+Docker garantit la portabilité de l’application dans différents environnements
+Cloud Run permet un déploiement serverless, scalabilité automatique, sans gestion de serveurs
+Terraform facilite la reproductibilité de l’infrastructure, et versionne la configuration cloud
 
-Frontend
-Se placer dans le dossier front
 
-Installer les dépendances :
-
-bash
-Copier
-npm install
-Builder le frontend :
-
-bash
-Copier
-npm run build
-Uploader le dossier dist/ vers le bucket Google Cloud Storage (nom : bucket-quick-quotes) :
-
-bash
-Copier
-gsutil -m cp -r dist/* gs://bucket-quick-quotes
-Accéder au frontend via l’URL publique du bucket :
-
-pgsql
-
-https://storage.googleapis.com/bucket-quick-quotes/index.html
